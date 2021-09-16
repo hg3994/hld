@@ -1,0 +1,152 @@
+DJ: 
+	It has to be as generic as possible. As useful to as many teams as possible.
+	We try to make sure that we maintain the performance of the system.
+	We try to maintain better code base by writing unit tests & behavioural tests thoroughly.
+
+
+Leadership Principles
+=====================
+
+Try to answer a question in 3mins.
+
+There was a problem in a build flow. Sounds simple but a complicated problem build time. Sounds a trivial problem.
+My task was to make it resumable.
+
+Asked for feedback from customers.
+
+Problem: 
+	Not a resumable build. It magnifies when the build time is huge. Some of the chips take 22hrs to build. A chip takes 2 years to build and 70% of the time is spent in it.
+
+	
+Did a quick thing and collected the data that so much of build time 
+
+Went to the team understanding the problem.
+How are you doing it? => I created a save-file system. Depndency Graph is saved.
+Challenges => Global Variables, saving depndency, 
+Results => 90%. Deployed across different business units. 
+	Ended up creating thorough documentation. Kept the feature it simple.
+Guidelines for projects. Regression tests.
+Others =>
+	Contact Lead for understanding why are we facing such a problem.
+
+Would you have done anything differently? => 
+
+S - Sitation (Problem) for 1 min
+T - Task for 20secs
+A - Action for 2mins
+	- First I did analysis
+	- Brought some data on Why am I doing it
+	- Created Roadmap
+	- What work did I do?
+R - Results for 2 mins
+
+
+Why were you not the owner of Pradeep's story? => Primary area of ownership (much larger number of stake holders involved ... I knew what was happening behind the scenes... )
+
+Documentation => How did you make sure that the documentation never got stale. We review all the documentation once a month for 30mins.
+Customer Documentation / API, Developer Documentation.
+
+
+Since I own that team that it is very hard for 
+
+1. 	Customer Obsession
+	- Who was your most difficult customer?
+	- Tell me about a time when you didn't meet customer expectations. What happened, and how did you deal with the situation?
+	- How do you go about prioritizing customer needs when you are dealing with a large number of customers?
+
+2. 	Ownership
+	- Tell me about a time when you took on a task that was beyond your job responsibilities.
+	- Tell me about a time when you had to work on a task with unclear responsibilities.
+	- Tell me about a time when you showed an initiative to work on a challenging project.
+
+3. 	Invent and Simplify
+	- Describe a time when you found a simple solution to a complex problem.
+	- Tell me about a time when you invented something.
+	- Tell me about a time when you tried to simplify a process but failed. What would you have done differently?
+
+4. 	Learn and Be Curious
+	- Tell me about an important lesson you learned over the past year.
+	- Tell me about a situation or experience you went through that changed your way of thinking.
+	- Tell me about a time when you made a smarter decision with the help of your curiosity.
+
+5. Deliver Results
+	- Describe the most challenging situation in your life and how you handled it.
+	- Give an example of a time when you had to handle a variety of assignments. What was the outcome?
+	- Tell me about a time when your team gave up on something, but you pushed them to deliver results.
+
+6. 	Dive Deep
+	- Tell me about the most complicated problem you've had to deal with.
+	- Give me an example of when you utilized in-depth data to develop a solution.
+	- Tell me about something that you have learned in your role.
+
+7. 	Have backbone; disagree and commit
+	- Describe a time when you disagreed with the approach of a team member. What did you do?
+	- Give me an example of something you believe in that nobody else does.
+	- Tell me about an unpopular decision of yours.
+
+8. 	Bias for Action
+	- Provide an example of when you took a calculated risk.
+	- Describe a situation when you took the initiative to correct a problem or a mistake rather than waiting for someone else to do it.
+	- Tell me about a time when you required some information from somebody else, but they weren't responsive. What did you do?
+
+9. Insist on highest standards
+	- Tell me about a time when you were dissatisfied with the quality of a project at work. What did you do to improve it?
+	- Tell me about a time when you motivated others to go above and beyond.
+	- Describe a situation when you couldn't meet your standards and expectations on a task.
+
+10. Earn Trust
+	- Describe a time when you had to speak up in a difficult or uncomfortable environment.
+	- What would you do to gain the trust of your team?
+	- Tell me about a time when you had to tell a harsh truth to someone.
+----
+
+11.	Think Big
+	- Tell me about your most significant professional achievement.
+	- Tell me about a time when you had to make a bold and challenging decision.
+	- Tell me about a time when your vision led to a great impact.
+
+12. Hire and Develop the best
+	- Tell me about a time when you mentored someone.
+	- Tell me about a time when you made a bad hire. When did you figure it out, and what did you do?
+	- What qualities do you look for in potential candidates when making hiring decisions?
+
+13. 	Are Right, A lot
+	- Tell me about a time when you effectively used your judgment to solve a problem.
+	- Tell me about a time when you had to work with insufficient information or incomplete data.
+	- Tell me about a time when you were wrong.
+
+14. Frugality
+
+
+Sample Questions:
+=================
+
+Microsoft:
+	Why are you leaving your current position?
+	Why do you want to work for our company?
+	What has been your biggest accomplishment so far?
+	If you could change one thing about your past place of employment, what would it be? Why?
+	Did you ever fire someone? Did you ever put someone on PIP? Why?
+	How is managing other managers different from managing individual contributors?
+
+Rejection Reasons
+=================
+Facebook:
+	In design round, I didn't do enough quantitative analysis and there were not enough trade off discussions.
+
+
+Resources
+=========
+- https://leetcode.com/discuss/interview-question/1252195/facebook-behavioral-interview-tell-me-about-a-time-you-had-to-manage-conflicting-priorities
+- https://www.amazon.jobs/en/principles
+- https://www.themartec.com/insidelook/behavioral-interview-questions
+
+- https://www.levels.fyi/blog/amazon-leadership-principles.html
+
+- https://leetcode.com/discuss/interview-question/1282122/disagreed-with-someone-conflict-at-work-facebook-behavioral-jedi-interview
+
+Questions to Ask
+================
+How long have you been working?
+What is the fav part of your job?
+How is the day of an enginner like in your team?
