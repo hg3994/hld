@@ -1,0 +1,83 @@
+
+System Design
+==============
+1. Ask Good Questions:
+	- What features to work on?
+	- How much to scale?
+2. Clear and Organized Thinking
+	- Define the APIs.
+	- Draw the right boxes.
+3. Drive Discussion
+
+
+Things to Consider
+===================
+1. Availability:
+	- If the host went down, will my service still available?
+	- If the data center went down, will my service still available?
+
+2. Latency Performance:
+	- If it is a customer facing request, then this is amust.
+	- If it is a background job, it need not be super fast.
+
+3. Scalability:
+	- Is it going to work ofr 1000 users? 10000 users? 1 million users? 1 billion users?
+
+4. Durability:
+	- Might not be important for all interviews.
+	- Security regarding the data in the DB.
+
+
+Concepts
+========
+
+
+
+- Fan Out:
+
+Services
+========
+
+* Cassandra: is a wide column highly scalable database. 
+	- Used when there are traditional rows and many columns.
+	- It provides both eventual and strong consistency
+	- It uses consistent hashing to shard your data and also uses gossping to keep all nodes informed about the cluster.
+
+* MongoDB/CouchDB: JSON like structure of documents stored in a database
+	- It provide ACID propertis at a document level.
+
+* Memcached/Redis:
+	- Distributed Caches which hold the data in memeory.
+	- Memcached: Simple and fast key-value storeage.
+	- Redis: Does a lot of more things more than Memcached. It can provide more availability and data replication.
+	- They should never be the source of truth.
+
+* Zookeeper:
+	- Centeralized configuration management tool used to leader election and distributed locking.
+	- Scales very well for the reads but not for writes
+	- It stores all the data in memory so we cant keep more data in zookeeper.
+	- So, if you want to keep small amount of data which should be highly available and tons of read
+
+
+* Kafka:
+	- Fault tolerant, highly available queue used in Pub-Sub or in Streaming application.
+	- It can deliver a message exactly once and also it keeps all the message ordered inside a partition of a topic.
+
+* NGINX /  HAProxy:
+	- Load balancers which are very efficient.
+	- It can manage thousands of connections from a single instance.
+
+* Solr/Elastic Search:
+	- Highly avaiable, highly scalable and fault tolerant search platforms which provide functionality like full text search
+
+* Blob Store:
+	- Files storage to be kept on cloud. Ex: S3
+
+* Docker:
+	- Software platform that Provides containers inside which we can develop and run your distributed applications.
+	- Kubernates/Mesos: Platforms used to manage the containers of docker
+
+Resources
+=========
+https://leetcode.com/discuss/interview-question/system-design/1205825/FANG-System-Design-Interview-Preparation-Master-Doc
+https://drive.google.com/file/d/16wtG6ZsThlu_YkloeyX8pp2OEjVebure/view
