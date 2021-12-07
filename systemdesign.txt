@@ -1,6 +1,9 @@
 
 System Design
 ==============
+
+https://www.youtube.com/watch?v=UzLMhqg3_Wc
+
 1. Ask Good Questions:
 	- What features to work on?
 	- How much to scale?

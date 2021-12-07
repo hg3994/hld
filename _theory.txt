@@ -42,7 +42,7 @@ Server & Infrastructure
 		When a trusted SSL Digital Certificate is used during a HTTPS connection, users will see a padlock icon in the browser address bar. When an Extended Validation Certificate is installed on a web site, the address bar will turn green.
 
 	Why is a SSL certificate required?
-		All communications sent over regular HTTP connections are in 'plain text' and can be read by any hacker that manages to break into the connection between your browser and the website. This presents a clear danger if the 'communication' is on an order form and includes your credit card details or social security number. With a HTTPS connection, all communications are securely encrypted. This means that even if somebody managed to break into the connection, they would not be able decrypt any of the data which passes between you and the website.
+		All communications sent over regular HTTP connections are in 'plain text' and can be read by any hacker that manages to break into the connection between your browser and the website. This presents a clear danger if the 'communication' is on an order form and includes your credit card details or social security number. With a HTTPS connection, all communications are securely encrypted. This means that even if somebody managed to break into the connection, they would not be able decrypt any of the data which passes between you and the website. These attacks are called 'Man in the Middle' attacks.
 
 5. What is reverse proxy?
 		The server that retrieves resources on behalf of a client from one or more servers. These resources are then returned to the client appearing as if they originated from the proxy server itself.
@@ -160,6 +160,8 @@ Server & Infrastructure
 			If DB queries are huge, then we can replicate the DB server with multiple DB servers so that load is distributed across them. We will have to handle the sync delay between master-slave if Master-slave strategy is chose.
 	- Scaling:
 			If incoming request is huge, then the application server has ability to handle limited number of requests, so we have to scale the application server in some way so that it is able to handle more requests. It can either be vertical scaling or horizontal scaling.
+	- Check for Async Workers:
+			If the job can be done in an async way, then the thread must not wait for the response and can close early. For cases like Sending Notifications, Analytics, this can be used. It can easily be used with help of Kafka or any queue where the request are put and the thread gets a response like "Your request is accepted and will be done in some time..."
 
 
 18. Monolithic Design vs. Microservices Design
@@ -228,14 +230,14 @@ Server & Infrastructure
 			• Synchronous – The client expects a timely response from the service and might even block while it waits.
 			• Asynchronous – The client doesn’t block while waiting for a response, and the response, if any, isn’t necessarily sent immediately.
 		The following table shows the various interaction styles:
-									----------------------------------------------------|
-									|	ONE-TO-ONE 							|	ONE-TO-MANY 						|
-		----------------------------------------|-------------------------|
-		SYNCHRONOUS 	|	Request/response 				|				—									|
-		--------------|-------------------------|-------------------------|
-		ASYNCHRONOUS 	|	Notification 						|	Publish/subscribe 			|
-									|	Request/async response 	|	Publish/async responses |
-		------------------------------------------------------------------|
+				--------------------------------------------------------|
+				|	ONE-TO-ONE 				|	ONE-TO-MANY 			|
+--------------------------------------------|---------------------------|
+SYNCHRONOUS 	|	Request/response 		|				— 			|
+----------------|---------------------------|-------------------------	|
+ASYNCHRONOUS 	|	Notification 			|	Publish/subscribe 		|
+				|	Request/async response 	|	Publish/async responses |
+------------------------------------------------------------------------|
 
 23. Event-Driven Architecture:
 
@@ -261,12 +263,15 @@ Server & Infrastructure
 
 
 25. Caching: Used to speed up your request. If you know that some data is accessed more frequently then cache it.
-	Caches are of two types:
+	Caches in a system can be implemented in two ways:
 		- Every node has its own cache.
 		- Distributed Cache: One cache for all.
 	Things to consider for Cache:
 		- Cache can not the source of truth
 		- Cache data has to be pretty small since everything is stored in memory.
+	Caches are of two types:
+		- Write through cache: System writes into the cache and then into the database so that cache contains all the recent data.
+		- Write back cache: System writes into the database and then into the cache.
 
 26. Data Centers: Data Centers has Racks and Racks has hosts.
 
@@ -315,6 +320,22 @@ Operating Systems
 
 4. IPv4 vs IPv6: IPv4 has 32 bit ddresses while IPv6 has 128bit addresses.
 
+5. Concurrency vs Parallelism:
+	Parallelism
+		Using multiple computational resources (like more processor cores) to perform a computation faster, usually executing at the same time.
+		Example: summing a list of Integers by dividing it in half and calculating both halves in parallel.
+		Main concern: efficiency.
+
+	Concurrency
+		Multiple tasks interleaved. Concurrency doesn't have to be multithreaded. We can write concurrent applications on single processor using methods such as event loops.
+		Example: Communicating with external services through HTTP.
+		Main concern: interaction with multiple, independent and external agents.
+
+	CPU-bound task
+		Operation that mostly requires processor resources to finish its computation.
+
+	IO-bound task
+		Operation that mostly does I/O and it doesn't depend on your computation resources, e.g. waiting for disk operation to finish or external service to answer your request.
 
 Databases
 =========
@@ -336,8 +357,10 @@ Databases
 	Isolation
 		This property ensures that multiple transactions can occur concurrently without leading to inconsistency of database state. Transactions occur independently without interference. Changes occurring in a particular transaction will not be visible to any other transaction until that particular change in that transaction is written to memory or has been committed. This property ensures that the execution of transactions concurrently will result in a state that is equivalent to a state achieved these were executed serially in some order.
 
+		This actually means isolating some users from reads/write for small amt of time so that the database stays consistent.
+
 	Durability
-		This property ensures that once the transaction has completed execution, the updates and modifications to the database are stored in and written to disk and they persist even is system failure occurs. These updates now become permanent and are stored in a non-volatile memory. The effects of the transaction, thus, are never lost.
+		This property ensures that once the transaction has completed execution, the updates and modifications to the database are stored in and written to disk and they persist even if system failure occurs. These updates now become permanent and are stored in a non-volatile memory. The effects of the transaction, thus, are never lost.
 
 	The ACID properties, in totality, provide a mechanism to ensure correctness and consistency of a database in a way such that each transaction is a group of operations that acts a single unit, produces consistent results, acts in isolation from other operations and updates that it makes are durably stored.
 
@@ -359,7 +382,63 @@ Databases
 
 		The availability of BASE is achieved through supporting partial failures without total system failure. Here is a simple example: if users are partitioned across five database servers, BASE design encourages crafting operations in such a way that a user database failure impacts only the 20 percent of the users on that particular host. There is no magic involved, but this does lead to higher perceived availability of the system.
 
-4. 
+4. Double Booking Problem:
+	https://www.youtube.com/watch?v=_95dCYv2Xv4&ab_channel=HusseinNasser
+	https://www.youtube.com/watch?v=gv62vmvyy6s&list=UUMO_ML5xP23TOWKUcc-oAE_Eg&index=49&ab_channel=HusseinNasser
+	In applications like Book my show, flight reservation system, etc when we want to book seats, what we generally do is 
+		a. Check if the selected seat is available 
+			SELECT * from seats where seatId = .. AND isBooked = 0
+		b. If (a) returns true, then we update the seat with the user details and basically book it for him/her
+			UPDATE seats set isBooked=1, name = ... WHERE seatId = ..
+		   If (b) returns false, then we respond to the user saying "Seat Already Booked"
+
+	But, this code is not correct and has a problem of 'Race Condition' which will cause a Double Booking Problem. Here's how:
+		Imagine that the application is having huge traffic and multiple people are trying to book the tickets. It may happen that two people are trying to book the same seat at the same time. When this happens, both user A and B check for Step (a) together and then get that the seat is available for them to book. Both the processes will now continue and update the seat as Booked. The one which updates it later is actually reserving the seats actually but both of them would get the response saying "Tickets booked successfully" with the seat numbers. Now this becomes a problem since the same seat is given to both the users A and B.
+
+	How to prevent Double Booking?
+		The first process to get to the row should obtain an exclusive lock on that row so that the other process when it tries to execute it will have to wait for accessing this row until the other trasaction actually completes. We do it like this:
+			SELECT * from seats where seatId = .. AND isBooked = 0 FOR UPDATE
+		Using the statement "FOR UPDATE" we are telling the database to obtain a row level lock so that if other process comes, it will make them wait. We can also put a timeout here which will make the other process wait for X secs and then allow it. We are sure that after X seconds my transaction would be completed so when the other process comes to read it, it would say "Seats booked already".
+		This row level locks are available in some certain databases only like postgres, mysql, etc.
+
+		If we do not use the time thing for X secs, the other process is going to wait for ever till the first transaction completes. This is bad since we should never want a process to wait indefinitely. So, it is better to provide a timeout so that the other processes is allowed to enter after X secs. We can do it like this:
+			SET LOCAL lock_timeout = '1s';
+
+		This is now a bullet proof online seat booking system. It will not have a Double Booking or Race Condition issue. User which reaches first obtains a lock on the specific row and the other User keeps waiting till this transaction 1 is completed. Once the transaction 1 is completed, the lock is released and the user 2 can now access the row which would say isBooked = 1 and the user would get the message that seat is already booked.
+
+5. Exclusive Lock and Shared Lock:
+	https://www.youtube.com/watch?v=b7razfltSFM&ab_channel=HusseinNasser
+
+	Exclusive Lock: I want to read a piece of data in the database but I want to make sure that when I read/update this value, no body is attempting to read/update this value. I want to acquire exclusive lock on this row. I will be only one who is allowed to update/read the value. While there is an exclusive lock, no body can read or write or be connected.
+		This is used to ensure consistency.
+		When you take a exclusive lock on a row, there should be NO shared locks on it.
+
+	Shared Locks: I want to read a value from the database I want to make sure that no body change that. If any body is trying to update that value, they will fail. More people can read but no one can update.
+		When you take a shared lock on a row, there should be NO exclusive locks on it.
+
+
+6. Pessimistic concurrency control vs Optimistic concurrency control
+	https://www.youtube.com/watch?v=I8IlO0hCSgY&ab_channel=HusseinNasser
+	https://www.youtube.com/watch?v=H_zJ81I_D5E&ab_channel=HusseinNasser
+	Pessimistic concurrency control: When a transaction is happening for updating a value, an exclusive lock is taken for that row so that no other process can read/update the data in the same row. This is in order to get data consistent at all point of time.
+		Cons:
+			a. When we have millions of transactions updating the same row (Bad Database design though! Ehh!) then everything will be slow.
+			b. Locks are expensive. Locks are difficult to handle.
+
+	Optimistic concurrency control: When a transaction is happening for updating a value, no locks are taken at all. Let both the transaction book the same seat. Before commiting the transaction, it just says Check if the data has changed already, if it has changed already, then it means that someone else has already changed the value at this row, so rollback whatever part of the transaction was done and start over. If the data has not changed, then go ahead and commit the transaction. 
+		Cons:
+			a. It is still risky since there may be a change that it done after the "revised read" and commiting the transaction so still there exists a time window (time-to-check to time-to-read: https://en.wikipedia.org/wiki/Time-of-check_to_time-of-use) which will allow some race conditions to happen and thus our data base would be inconsistent. This is actually not even a lock, it is something that has to be handled at application level.
+
+		Dynamo db uses optimistic locking concept. It adds an extra field called version number to each object and the version number gets incremented with each update to that item. If someone tries to update the item with some stale version a recoverable exception is thrown so there should be retries at application level.
+		Problem with this approach in case of multiple threads updating the same item, a particular thread can receive version conflict exception again and again, because of limited number of retries at application layer that thread can fail altogether.
+		Ref: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBMapper.OptimisticLocking.html
+
+
+	PostGres - Puts these locks on disks
+	SQL Server - Handles these locks in memory
+	MongoDB -  has row/document level locks for writes and automatic retrying. 
+
+
 
 Object Oriented Programming / C++
 =================================
@@ -468,6 +547,19 @@ Object Oriented Programming / C++
 				    
 				   /* Other members */
 				}; 
+
+	Similarities/Disimilarities between Pure Virtual Functions and Virtual Functions
+	================================================================================
+		Virtual Function in C++
+			A virtual function is a member function which is declared within a base class and is re-defined(Overriden) by a derived class. When you refer to a derived class object using a pointer or a reference to the base class, you can call a virtual function for that object and execute the derived class’s version of the function.
+
+		Pure Virtual Functions in C++
+			A pure virtual function (or abstract function) in C++ is a virtual function for which we don’t have an implementation, we only declare it. A pure virtual function is declared by assigning 0 in the declaration.
+
+		Similarities between virtual function and pure virtual function
+			These are the concepts of Run-time polymorphism.
+			Prototype i.e. Declaration of both the functions remains the same throughout the program.
+			These functions can’t be global or static.
 
 4. Abstract Classes:
 		Sometimes implementation of all function cannot be provided in a base class because we don’t know the implementation. Such a class is called abstract class. For example, let Shape be a base class. We cannot provide implementation of function draw() in Shape, but we know every derived class must have implementation of draw(). Similarly an Animal class doesn’t have implementation of move() (assuming that all animals move), but all animals must know how to move. We cannot create objects of abstract classes.
@@ -757,7 +849,6 @@ Design Patterns
 
 Ruby and Rails
 ==============
-
 
 
 MISC
